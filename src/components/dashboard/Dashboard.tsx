@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { QueryInterface } from "./QueryInterface";
 import { KPICards } from "./KPICards";
 import { ChartContainer } from "./ChartContainer";
@@ -46,43 +47,48 @@ export function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center gap-4 px-4">
-          <SidebarTrigger />
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold">AnalystX Dashboard</h1>
-            <p className="text-sm text-muted-foreground">Real-time AI-powered data analysis</p>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <SidebarInset>
+          {/* Header */}
+          <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-14 items-center gap-4 px-4">
+              <SidebarTrigger />
+              <div className="flex-1">
+                <h1 className="text-lg font-semibold">AnalystX Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Real-time AI-powered data analysis</p>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <div className="flex-1 overflow-auto p-6 space-y-6">
+            {/* KPI Cards */}
+            <KPICards />
+
+            {/* Anomaly Alerts */}
+            <AnomalyAlerts />
+
+            {/* Query Interface */}
+            <QueryInterface onQuerySubmit={handleQuerySubmit} />
+
+            {/* Results Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Charts and Data */}
+              <div className="lg:col-span-2">
+                {currentResult && <ChartContainer result={currentResult} />}
+              </div>
+
+              {/* Insights Panel */}
+              <div className="space-y-6">
+                {currentResult && <InsightsPanel result={currentResult} />}
+                <RecentQueries queries={queryResults} onSelectQuery={setCurrentResult} />
+              </div>
+            </div>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6 space-y-6">
-        {/* KPI Cards */}
-        <KPICards />
-
-        {/* Anomaly Alerts */}
-        <AnomalyAlerts />
-
-        {/* Query Interface */}
-        <QueryInterface onQuerySubmit={handleQuerySubmit} />
-
-        {/* Results Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Charts and Data */}
-          <div className="lg:col-span-2">
-            {currentResult && <ChartContainer result={currentResult} />}
-          </div>
-
-          {/* Insights Panel */}
-          <div className="space-y-6">
-            {currentResult && <InsightsPanel result={currentResult} />}
-            <RecentQueries queries={queryResults} onSelectQuery={setCurrentResult} />
-          </div>
-        </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
