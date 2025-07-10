@@ -9,13 +9,6 @@ import { TrendExport } from "./TrendExport";
 export function TrendsDashboard() {
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Trends</h1>
-        <p className="text-muted-foreground">
-          Analyze long-term patterns and seasonal trends
-        </p>
-      </div>
-
       <Tabs defaultValue="analysis" className="space-y-4">
         <TabsList>
           <TabsTrigger value="analysis">Trend Analysis</TabsTrigger>
