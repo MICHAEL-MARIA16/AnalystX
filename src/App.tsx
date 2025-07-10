@@ -10,6 +10,10 @@ import Analytics from "./pages/Analytics";
 import Insights from "./pages/Insights";
 import AnomalyDetection from "./pages/AnomalyDetection";
 import DataSources from "./pages/DataSources";
+import Reports from "./pages/Reports";
+import Trends from "./pages/Trends";
+import UserManagement from "./pages/UserManagement";
+import SystemSettings from "./pages/SystemSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +31,10 @@ const App = () => (
           <Route path="/insights" element={<Insights />} />
           <Route path="/anomalies" element={<AnomalyDetection />} />
           <Route path="/sources" element={<DataSources />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/trends" element={<Trends />} />
+          <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/settings" element={<SystemSettings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
