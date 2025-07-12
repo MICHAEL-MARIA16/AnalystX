@@ -16,19 +16,9 @@ interface Dataset {
   created_at: string;
 }
 
-interface Insight {
-  id: string;
-  title: string;
-  content: string;
-  insight_type: string;
-  created_at: string;
-  metadata: any;
-}
-
 export function MainDashboard() {
   const { user } = useAuth();
   const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [insights, setInsights] = useState<Insight[]>([]);
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
 
@@ -51,25 +41,7 @@ export function MainDashboard() {
     };
 
     fetchDatasets();
-  }, [user]);
-
-  useEffect(() => {
-    if (!selectedDataset) return;
-
-    const fetchInsights = async () => {
-      const { data, error } = await supabase
-        .from('insights')
-        .select('*')
-        .eq('dataset_id', selectedDataset)
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setInsights(data);
-      }
-    };
-
-    fetchInsights();
-  }, [selectedDataset]);
+  }, [user, selectedDataset]);
 
   const handleUploadComplete = (datasetId: string) => {
     setSelectedDataset(datasetId);
@@ -160,10 +132,7 @@ export function MainDashboard() {
         {/* Main Content */}
         <div className="lg:col-span-3">
           {selectedDataset ? (
-            <InsightsView 
-              dataset={datasets.find(d => d.id === selectedDataset)!} 
-              insights={insights} 
-            />
+            <InsightsView datasetId={selectedDataset} />
           ) : (
             <Card>
               <CardContent className="py-12">

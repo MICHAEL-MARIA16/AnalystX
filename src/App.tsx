@@ -6,18 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/components/auth/AuthProvider";
 import { LoginForm } from "@/components/auth/LoginForm";
-import Index from "./pages/Index";
-import Insights from "./pages/Insights";
-import Analytics from "./pages/Analytics";
-import AnomalyDetection from "./pages/AnomalyDetection";
-import QueryAssistant from "./pages/QueryAssistant";
-import DataSources from "./pages/DataSources";
-import Reports from "./pages/Reports";
-import Trends from "./pages/Trends";
-import UserManagement from "./pages/UserManagement";
-import SystemSettings from "./pages/SystemSettings";
-import DataUpload from "./pages/DataUpload";
-import NotFound from "./pages/NotFound";
+import { Header } from "@/components/layout/Header";
+import { MainDashboard } from "@/components/dashboard/MainDashboard";
 
 const queryClient = new QueryClient();
 
@@ -40,20 +30,10 @@ function AppContent() {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/insights" element={<Insights />} />
-      <Route path="/analytics" element={<Analytics />} />
-      <Route path="/anomaly-detection" element={<AnomalyDetection />} />
-      <Route path="/query-assistant" element={<QueryAssistant />} />
-      <Route path="/data-upload" element={<DataUpload />} />
-      <Route path="/data-sources" element={<DataSources />} />
-      <Route path="/reports" element={<Reports />} />
-      <Route path="/trends" element={<Trends />} />
-      <Route path="/user-management" element={<UserManagement />} />
-      <Route path="/system-settings" element={<SystemSettings />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <MainDashboard />
+    </div>
   );
 }
 
@@ -64,7 +44,9 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <AppContent />
+          <Routes>
+            <Route path="*" element={<AppContent />} />
+          </Routes>
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

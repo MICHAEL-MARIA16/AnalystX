@@ -1,94 +1,110 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatDistanceToNow } from "date-fns";
-import { 
-  BarChart3, 
-  TrendingUp, 
-  AlertTriangle, 
-  Lightbulb,
-  FileText,
-  Calendar
-} from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { BarChart3, TrendingUp, AlertTriangle, Lightbulb } from 'lucide-react';
 
 interface Dataset {
   id: string;
   name: string;
   file_type: string;
-  status: string | null;
+  row_count: number;
+  columns_info: any;
+  status: string;
   created_at: string;
 }
 
 interface Insight {
   id: string;
+  insight_type: string;
   title: string;
   content: string;
-  insight_type: string;
-  created_at: string;
   metadata: any;
+  created_at: string;
 }
 
 interface InsightsViewProps {
-  dataset: Dataset;
-  insights: Insight[];
+  datasetId?: string;
 }
 
-const getInsightIcon = (type: string) => {
-  switch (type) {
-    case 'summary':
-      return BarChart3;
-    case 'trends':
-      return TrendingUp;
-    case 'anomalies':
-      return AlertTriangle;
-    case 'recommendations':
-      return Lightbulb;
-    default:
-      return FileText;
-  }
-};
+export function InsightsView({ datasetId }: InsightsViewProps) {
+  const { user } = useAuth();
+  const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const getInsightColor = (type: string) => {
-  switch (type) {
-    case 'summary':
-      return 'bg-blue-500/10 text-blue-700 border-blue-200';
-    case 'trends':
-      return 'bg-green-500/10 text-green-700 border-green-200';
-    case 'anomalies':
-      return 'bg-orange-500/10 text-orange-700 border-orange-200';
-    case 'recommendations':
-      return 'bg-purple-500/10 text-purple-700 border-purple-200';
-    default:
-      return 'bg-gray-500/10 text-gray-700 border-gray-200';
-  }
-};
+  useEffect(() => {
+    if (!user || !datasetId) return;
 
-export function InsightsView({ dataset, insights }: InsightsViewProps) {
-  const groupedInsights = insights.reduce((acc, insight) => {
-    if (!acc[insight.insight_type]) {
-      acc[insight.insight_type] = [];
+    const fetchData = async () => {
+      try {
+        // Fetch dataset info
+        const { data: datasetData, error: datasetError } = await supabase
+          .from('datasets')
+          .select('*')
+          .eq('id', datasetId)
+          .single();
+
+        if (datasetError) throw datasetError;
+        setDataset(datasetData);
+
+        // Fetch insights
+        const { data: insightsData, error: insightsError } = await supabase
+          .from('insights')
+          .select('*')
+          .eq('dataset_id', datasetId)
+          .order('created_at', { ascending: false });
+
+        if (insightsError) throw insightsError;
+        setInsights(insightsData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user, datasetId]);
+
+  const getInsightIcon = (type: string) => {
+    switch (type) {
+      case 'summary': return <BarChart3 className="h-4 w-4" />;
+      case 'trends': return <TrendingUp className="h-4 w-4" />;
+      case 'anomalies': return <AlertTriangle className="h-4 w-4" />;
+      case 'recommendations': return <Lightbulb className="h-4 w-4" />;
+      default: return <BarChart3 className="h-4 w-4" />;
     }
-    acc[insight.insight_type].push(insight);
-    return acc;
-  }, {} as Record<string, Insight[]>);
+  };
 
-  const insightTypes = [
-    { key: 'summary', label: 'Summary', description: 'Key statistics and overview' },
-    { key: 'trends', label: 'Trends', description: 'Notable patterns in your data' },
-    { key: 'anomalies', label: 'Anomalies', description: 'Unusual or outlier data points' },
-    { key: 'recommendations', label: 'Recommendations', description: 'Actionable insights and suggestions' }
-  ];
+  const getInsightColor = (type: string) => {
+    switch (type) {
+      case 'summary': return 'bg-blue-100 text-blue-800';
+      case 'trends': return 'bg-green-100 text-green-800';
+      case 'anomalies': return 'bg-red-100 text-red-800';
+      case 'recommendations': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-  if (insights.length === 0) {
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
+
+  if (!dataset) {
     return (
       <Card>
-        <CardContent className="p-12 text-center">
-          <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Generating insights...</h3>
-          <p className="text-muted-foreground">
-            AI is analyzing your data. This may take a few moments.
-          </p>
+        <CardContent className="py-8">
+          <p className="text-center text-muted-foreground">Dataset not found</p>
         </CardContent>
       </Card>
     );
@@ -96,110 +112,74 @@ export function InsightsView({ dataset, insights }: InsightsViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Dataset Info */}
+      {/* Dataset Overview */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                {dataset.name}
-              </CardTitle>
-              <CardDescription className="flex items-center gap-4 mt-2">
-                <span>Type: {dataset.file_type.toUpperCase()}</span>
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {formatDistanceToNow(new Date(dataset.created_at), { addSuffix: true })}
-                </span>
-              </CardDescription>
-            </div>
-            <Badge variant="default">
-              {insights.length} insight{insights.length !== 1 ? 's' : ''}
+          <CardTitle className="flex items-center justify-between">
+            {dataset.name}
+            <Badge variant={dataset.status === 'ready' ? 'default' : 'secondary'}>
+              {dataset.status}
             </Badge>
-          </div>
+          </CardTitle>
+          <CardDescription>
+            {dataset.file_type.toUpperCase()} file • {dataset.row_count} rows • 
+            Uploaded {new Date(dataset.created_at).toLocaleDateString()}
+          </CardDescription>
         </CardHeader>
+        {dataset.columns_info && (
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {Object.keys(dataset.columns_info).map((column) => (
+                <Badge key={column} variant="outline">
+                  {column}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       {/* Insights */}
-      <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          {insightTypes.map((type) => {
-            const Icon = getInsightIcon(type.key);
-            const hasInsights = groupedInsights[type.key]?.length > 0;
-            
-            return (
-              <TabsTrigger 
-                key={type.key} 
-                value={type.key}
-                disabled={!hasInsights}
-                className="flex items-center gap-2"
-              >
-                <Icon className="h-4 w-4" />
-                {type.label}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-
-        {insightTypes.map((type) => {
-          const typeInsights = groupedInsights[type.key] || [];
-          const Icon = getInsightIcon(type.key);
-          
-          return (
-            <TabsContent key={type.key} value={type.key} className="space-y-4">
-              <div className="text-center mb-6">
-                <h3 className="text-lg font-semibold flex items-center justify-center gap-2">
-                  <Icon className="h-5 w-5" />
-                  {type.label}
-                </h3>
-                <p className="text-muted-foreground">{type.description}</p>
-              </div>
-
-              {typeInsights.length === 0 ? (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Icon className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-muted-foreground">
-                      No {type.label.toLowerCase()} available for this dataset
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {typeInsights.map((insight) => (
-                    <Card key={insight.id} className={`border-l-4 ${getInsightColor(insight.insight_type)}`}>
-                      <CardHeader>
-                        <CardTitle className="text-base">{insight.title}</CardTitle>
-                        <CardDescription>
-                          Generated {formatDistanceToNow(new Date(insight.created_at), { addSuffix: true })}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="prose prose-sm max-w-none">
-                          <div className="whitespace-pre-wrap">{insight.content}</div>
-                        </div>
-                        {insight.metadata && (
-                          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                            <p className="text-xs text-muted-foreground mb-2">Metadata:</p>
-                            <div className="text-xs space-y-1">
-                              {insight.metadata.columns && (
-                                <p>Columns analyzed: {insight.metadata.columns.join(', ')}</p>
-                              )}
-                              {insight.metadata.rowCount && (
-                                <p>Rows processed: {insight.metadata.rowCount.toLocaleString()}</p>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
+      <div className="grid gap-6">
+        {insights.length === 0 ? (
+          <Card>
+            <CardContent className="py-8">
+              <p className="text-center text-muted-foreground">
+                {dataset.status === 'processing' 
+                  ? 'Generating insights... This may take a few minutes.'
+                  : 'No insights available yet. Try uploading a new dataset.'
+                }
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          insights.map((insight) => (
+            <Card key={insight.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {getInsightIcon(insight.insight_type)}
+                  {insight.title}
+                  <Badge className={getInsightColor(insight.insight_type)}>
+                    {insight.insight_type}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="prose max-w-none">
+                  <p className="whitespace-pre-wrap">{insight.content}</p>
                 </div>
-              )}
-            </TabsContent>
-          );
-        })}
-      </Tabs>
+                {insight.metadata && (
+                  <div className="mt-4 p-4 bg-muted rounded-lg">
+                    <pre className="text-sm overflow-auto">
+                      {JSON.stringify(insight.metadata, null, 2)}
+                    </pre>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 }
