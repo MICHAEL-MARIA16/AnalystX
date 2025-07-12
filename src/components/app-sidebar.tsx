@@ -27,20 +27,23 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { Upload } from "lucide-react";
+
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
-  { title: "Query Assistant", url: "/query", icon: MessageSquare },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Data Upload", url: "/data-upload", icon: Upload },
   { title: "AI Insights", url: "/insights", icon: Brain },
-  { title: "Anomaly Detection", url: "/anomalies", icon: AlertTriangle },
-  { title: "Data Sources", url: "/sources", icon: Database },
+  { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Query Assistant", url: "/query-assistant", icon: MessageSquare },
+  { title: "Anomaly Detection", url: "/anomaly-detection", icon: AlertTriangle },
+  { title: "Data Sources", url: "/data-sources", icon: Database },
   { title: "Reports", url: "/reports", icon: FileText },
   { title: "Trends", url: "/trends", icon: TrendingUp },
 ];
 
 const adminItems = [
-  { title: "User Management", url: "/admin/users", icon: Users },
-  { title: "System Settings", url: "/admin/settings", icon: Settings },
+  { title: "User Management", url: "/user-management", icon: Users },
+  { title: "System Settings", url: "/system-settings", icon: Settings },
 ];
 
 export function AppSidebar() {
