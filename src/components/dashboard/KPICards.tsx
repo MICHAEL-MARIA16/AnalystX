@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Users, DollarSign, ShoppingCart, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, Users, DollarSign, ShoppingCart, Activity, Database, BarChart3 } from "lucide-react";
 
 const kpis = [
   {
@@ -37,10 +37,56 @@ const kpis = [
   },
 ];
 
-export function KPICards() {
+interface KPICardsProps {
+  datasets?: any[];
+}
+
+export function KPICards({ datasets = [] }: KPICardsProps) {
+  // Calculate KPIs from user datasets
+  const totalDatasets = datasets.length;
+  const totalRows = datasets.reduce((sum, d) => sum + (d.row_count || 0), 0);
+  const totalColumns = datasets.reduce((sum, d) => sum + (d.columns_info?.columns?.length || 0), 0);
+  const avgRowsPerDataset = totalDatasets > 0 ? Math.round(totalRows / totalDatasets) : 0;
+
+  const dynamicKpis = [
+    {
+      title: "Total Datasets",
+      value: totalDatasets.toString(),
+      change: datasets.length > 0 ? "Ready" : "Upload data",
+      trend: "up",
+      icon: Database,
+      description: "uploaded datasets"
+    },
+    {
+      title: "Total Records",
+      value: totalRows.toLocaleString(),
+      change: `${totalColumns} columns`,
+      trend: "up", 
+      icon: BarChart3,
+      description: "across all datasets"
+    },
+    {
+      title: "Avg Dataset Size",
+      value: avgRowsPerDataset.toLocaleString(),
+      change: "records avg",
+      trend: "up",
+      icon: Activity,
+      description: "per dataset"
+    },
+    {
+      title: "Data Quality",
+      value: datasets.filter(d => d.status === 'ready').length > 0 ? "Good" : "No Data",
+      change: `${datasets.filter(d => d.status === 'ready').length}/${totalDatasets} ready`,
+      trend: datasets.filter(d => d.status === 'ready').length === totalDatasets ? "up" : "down",
+      icon: TrendingUp,
+      description: "datasets processed"
+    },
+  ];
+  const kpisToShow = totalDatasets > 0 ? dynamicKpis : kpis;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {kpis.map((kpi, index) => {
+      {kpisToShow.map((kpi, index) => {
         const Icon = kpi.icon;
         const TrendIcon = kpi.trend === "up" ? TrendingUp : TrendingDown;
         const trendColor = kpi.trend === "up" ? "text-green-600" : "text-red-600";

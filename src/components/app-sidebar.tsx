@@ -10,7 +10,8 @@ import {
   Users, 
   Home,
   Brain,
-  TrendingUp
+  TrendingUp,
+  Upload
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -29,6 +30,7 @@ import {
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: Home },
+  { title: "Upload Data", url: "/upload", icon: Upload },
   { title: "Query Assistant", url: "/query", icon: MessageSquare },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "AI Insights", url: "/insights", icon: Brain },

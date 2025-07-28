@@ -4,22 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Send, Loader2 } from "lucide-react";
+import { Brain, Send, Loader2, Database } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface QueryInterfaceProps {
-  onQuerySubmit: (query: string) => void;
+  onQuerySubmit: (query: string, datasetId?: string) => void;
+  availableDatasets?: any[];
 }
 
 const exampleQueries = [
-  "What was our monthly revenue in the last quarter?",
-  "Show me user growth trends by region",
-  "Which products have the highest churn rate?",
-  "Compare this month's sales to last month",
-  "What are our top performing marketing channels?",
+  "What are the key trends in my data?",
+  "Show me the top performing categories",
+  "Analyze performance by region or segment",
+  "What patterns do you see in the data?",
+  "Identify any anomalies or outliers",
 ];
 
-export function QueryInterface({ onQuerySubmit }: QueryInterfaceProps) {
+export function QueryInterface({ onQuerySubmit, availableDatasets = [] }: QueryInterfaceProps) {
   const [query, setQuery] = useState("");
+  const [selectedDataset, setSelectedDataset] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -28,7 +31,7 @@ export function QueryInterface({ onQuerySubmit }: QueryInterfaceProps) {
     setIsLoading(true);
     // Simulate AI processing time
     setTimeout(() => {
-      onQuerySubmit(query);
+      onQuerySubmit(query, selectedDataset || undefined);
       setQuery("");
       setIsLoading(false);
     }, 2000);
@@ -50,6 +53,31 @@ export function QueryInterface({ onQuerySubmit }: QueryInterfaceProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {availableDatasets.length > 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Select Dataset (Optional)</label>
+            <Select value={selectedDataset} onValueChange={setSelectedDataset}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose a dataset or use the most recent one" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Use most recent dataset</SelectItem>
+                {availableDatasets.map((dataset) => (
+                  <SelectItem key={dataset.id} value={dataset.id}>
+                    <div className="flex items-center gap-2">
+                      <Database className="h-4 w-4" />
+                      <span>{dataset.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {dataset.row_count} rows
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div className="space-y-2">
           <Textarea
             placeholder="e.g., What was our revenue last month compared to the previous month?"

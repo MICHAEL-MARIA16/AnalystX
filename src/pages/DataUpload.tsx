@@ -1,9 +1,8 @@
-
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Dashboard } from "@/components/dashboard/Dashboard";
+import { DataUploadDashboard } from "@/components/data-upload/DataUploadDashboard";
 
-export default function Index() {
+export default function DataUpload() {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full">
@@ -13,12 +12,12 @@ export default function Index() {
             <div className="flex h-14 items-center gap-4 px-4">
               <SidebarTrigger />
               <div className="flex-1">
-                <h1 className="text-lg font-semibold">AnalystX Dashboard</h1>
-                <p className="text-sm text-muted-foreground">AI-powered data insights from your uploaded data</p>
+                <h1 className="text-lg font-semibold">Data Upload</h1>
+                <p className="text-sm text-muted-foreground">Upload your data files to generate AI insights</p>
               </div>
             </div>
           </header>
-          <Dashboard />
+          <DataUploadDashboard />
         </SidebarInset>
       </div>
     </SidebarProvider>
