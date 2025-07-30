@@ -18,9 +18,7 @@ export default function Index() {
               </div>
             </div>
           </header>
-          <div className="flex-1">
-            <Dashboard />
-          </div>
+          <Dashboard />
         </SidebarInset>
       </div>
     </SidebarProvider>

@@ -160,16 +160,14 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
     setLoadingDataset(dataset.id);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Please log in to load demo data');
-      }
+      // For demo purposes, create a mock user ID
+      const mockUserId = 'demo-user-' + Date.now();
 
       // Create dataset record in database
       const { data: newDataset, error } = await supabase
         .from('datasets')
         .insert({
-          user_id: user.id,
+          user_id: mockUserId,
           name: dataset.name,
           description: dataset.description,
           file_type: 'demo',
