@@ -160,34 +160,25 @@ export function DemoDataLoader({ onDataLoaded }: DemoDataLoaderProps) {
     setLoadingDataset(dataset.id);
 
     try {
-      // For demo purposes, create a mock user ID
-      const mockUserId = 'demo-user-' + Date.now();
+      // Store demo data locally for immediate access
+      const demoData = {
+        id: dataset.id,
+        name: dataset.name,
+        description: dataset.description,
+        data: dataset.data,
+        columns: dataset.columns,
+        type: dataset.type,
+        loadedAt: new Date().toISOString()
+      };
 
-      // Create dataset record in database
-      const { data: newDataset, error } = await supabase
-        .from('datasets')
-        .insert({
-          user_id: mockUserId,
-          name: dataset.name,
-          description: dataset.description,
-          file_type: 'demo',
-          file_size: JSON.stringify(dataset.data).length,
-          row_count: dataset.data.length,
-          columns_info: {
-            columns: dataset.columns,
-            sample_data: dataset.data.slice(0, 3),
-            full_data: dataset.data
-          },
-          status: 'ready'
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
+      // Store in localStorage for persistence
+      const existingData = JSON.parse(localStorage.getItem('demoDatasets') || '[]');
+      const updatedData = [...existingData.filter((d: any) => d.id !== dataset.id), demoData];
+      localStorage.setItem('demoDatasets', JSON.stringify(updatedData));
 
       toast({
         title: "Demo data loaded!",
-        description: `${dataset.name} has been added to your datasets.`,
+        description: `${dataset.name} has been loaded and is ready to use.`,
       });
 
       onDataLoaded?.();

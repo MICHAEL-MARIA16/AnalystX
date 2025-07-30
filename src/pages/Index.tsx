@@ -8,7 +8,7 @@ export default function Index() {
     <SidebarProvider defaultOpen={true}>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <SidebarInset className="flex-1">
+        <SidebarInset className="flex-1 p-0">
           <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-14 items-center gap-4 px-4">
               <SidebarTrigger />
@@ -18,7 +18,9 @@ export default function Index() {
               </div>
             </div>
           </header>
-          <Dashboard />
+          <div className="p-0">
+            <Dashboard />
+          </div>
         </SidebarInset>
       </div>
     </SidebarProvider>

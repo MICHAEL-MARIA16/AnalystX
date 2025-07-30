@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileUpload } from "./FileUpload";
 import { UploadedDatasets } from "./UploadedDatasets";
 import { DemoDataLoader } from "./DemoDataLoader";
+import { DataViewer } from "./DataViewer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, Database, Zap } from "lucide-react";
 
@@ -51,10 +52,11 @@ export function DataUploadDashboard() {
       </div>
 
       <Tabs defaultValue="upload" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="upload">Upload Data</TabsTrigger>
           <TabsTrigger value="datasets">My Datasets</TabsTrigger>
           <TabsTrigger value="demo">Demo Data</TabsTrigger>
+          <TabsTrigger value="loaded">Loaded Data</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upload">
@@ -67,6 +69,10 @@ export function DataUploadDashboard() {
 
         <TabsContent value="demo">
           <DemoDataLoader onDataLoaded={handleUploadSuccess} />
+        </TabsContent>
+
+        <TabsContent value="loaded">
+          <DataViewer />
         </TabsContent>
       </Tabs>
     </div>
