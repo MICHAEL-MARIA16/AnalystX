@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, BarChart, Users, ShoppingCart } from "lucide-react";
+import { Play, BarChart, Users, ShoppingCart, TrendingUp, Zap, Target, Globe, Calendar, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -64,6 +64,86 @@ const demoDatasets = [
       { transaction_id: 'T006', customer_id: 'C005', product_name: 'Bluetooth Speaker', category: 'Electronics', price: 79.99, quantity: 1, date: '2024-01-20' },
       { transaction_id: 'T007', customer_id: 'C002', product_name: 'Desk Lamp', category: 'Home & Kitchen', price: 45.99, quantity: 1, date: '2024-01-21' },
       { transaction_id: 'T008', customer_id: 'C003', product_name: 'Protein Powder', category: 'Health', price: 54.99, quantity: 2, date: '2024-01-22' },
+    ]
+  },
+  {
+    id: 'marketing-demo',
+    name: 'Marketing Campaign Data',
+    description: 'Digital marketing performance with campaign metrics and ROI',
+    icon: TrendingUp,
+    type: 'Marketing Analytics',
+    rows: 120,
+    columns: ['campaign_id', 'platform', 'budget', 'impressions', 'clicks', 'conversions', 'cost_per_click', 'roi'],
+    data: [
+      { campaign_id: 'C001', platform: 'Google Ads', budget: 5000, impressions: 150000, clicks: 4500, conversions: 225, cost_per_click: 1.11, roi: 4.2 },
+      { campaign_id: 'C002', platform: 'Facebook', budget: 3500, impressions: 200000, clicks: 6000, conversions: 180, cost_per_click: 0.58, roi: 3.8 },
+      { campaign_id: 'C003', platform: 'Instagram', budget: 2500, impressions: 95000, clicks: 2850, conversions: 142, cost_per_click: 0.88, roi: 5.1 },
+      { campaign_id: 'C004', platform: 'LinkedIn', budget: 4000, impressions: 75000, clicks: 2250, conversions: 157, cost_per_click: 1.78, roi: 3.2 },
+      { campaign_id: 'C005', platform: 'Twitter', budget: 1500, impressions: 45000, clicks: 1350, conversions: 54, cost_per_click: 1.11, roi: 2.8 },
+    ]
+  },
+  {
+    id: 'hr-demo',
+    name: 'HR Analytics Data',
+    description: 'Employee performance, satisfaction, and organizational metrics',
+    icon: Users,
+    type: 'Human Resources',
+    rows: 180,
+    columns: ['employee_id', 'department', 'position', 'salary', 'performance_score', 'satisfaction', 'tenure_years'],
+    data: [
+      { employee_id: 'E001', department: 'Engineering', position: 'Senior Developer', salary: 95000, performance_score: 8.5, satisfaction: 9.2, tenure_years: 3.5 },
+      { employee_id: 'E002', department: 'Marketing', position: 'Marketing Manager', salary: 75000, performance_score: 7.8, satisfaction: 8.1, tenure_years: 2.1 },
+      { employee_id: 'E003', department: 'Sales', position: 'Sales Representative', salary: 65000, performance_score: 9.1, satisfaction: 8.9, tenure_years: 1.8 },
+      { employee_id: 'E004', department: 'Engineering', position: 'Junior Developer', salary: 68000, performance_score: 7.5, satisfaction: 8.7, tenure_years: 1.2 },
+      { employee_id: 'E005', department: 'Finance', position: 'Financial Analyst', salary: 70000, performance_score: 8.2, satisfaction: 7.8, tenure_years: 4.2 },
+    ]
+  },
+  {
+    id: 'finance-demo',
+    name: 'Financial Performance Data',
+    description: 'Revenue, expenses, profit margins, and financial KPIs',
+    icon: DollarSign,
+    type: 'Financial Analytics',
+    rows: 96,
+    columns: ['month', 'revenue', 'expenses', 'profit', 'margin_percent', 'cash_flow', 'investments'],
+    data: [
+      { month: '2024-01', revenue: 850000, expenses: 620000, profit: 230000, margin_percent: 27.1, cash_flow: 195000, investments: 50000 },
+      { month: '2024-02', revenue: 920000, expenses: 680000, profit: 240000, margin_percent: 26.1, cash_flow: 210000, investments: 75000 },
+      { month: '2024-03', revenue: 1100000, expenses: 750000, profit: 350000, margin_percent: 31.8, cash_flow: 285000, investments: 100000 },
+      { month: '2024-04', revenue: 980000, expenses: 695000, profit: 285000, margin_percent: 29.1, cash_flow: 245000, investments: 60000 },
+      { month: '2024-05', revenue: 1050000, expenses: 720000, profit: 330000, margin_percent: 31.4, cash_flow: 275000, investments: 85000 },
+    ]
+  },
+  {
+    id: 'website-demo',
+    name: 'Website Analytics Data',
+    description: 'Web traffic, user behavior, and conversion analytics',
+    icon: Globe,
+    type: 'Web Analytics',
+    rows: 365,
+    columns: ['date', 'sessions', 'users', 'pageviews', 'bounce_rate', 'avg_session_duration', 'conversions'],
+    data: [
+      { date: '2024-01-01', sessions: 1250, users: 980, pageviews: 4200, bounce_rate: 0.35, avg_session_duration: 185, conversions: 45 },
+      { date: '2024-01-02', sessions: 1380, users: 1120, pageviews: 4800, bounce_rate: 0.32, avg_session_duration: 205, conversions: 52 },
+      { date: '2024-01-03', sessions: 1520, users: 1280, pageviews: 5400, bounce_rate: 0.29, avg_session_duration: 220, conversions: 68 },
+      { date: '2024-01-04', sessions: 1450, users: 1180, pageviews: 5100, bounce_rate: 0.31, avg_session_duration: 195, conversions: 58 },
+      { date: '2024-01-05', sessions: 1680, users: 1420, pageviews: 6200, bounce_rate: 0.28, avg_session_duration: 240, conversions: 78 },
+    ]
+  },
+  {
+    id: 'inventory-demo',
+    name: 'Inventory Management Data',
+    description: 'Stock levels, supplier data, and inventory optimization metrics',
+    icon: Target,
+    type: 'Supply Chain',
+    rows: 240,
+    columns: ['product_id', 'category', 'stock_level', 'reorder_point', 'supplier', 'cost', 'turnover_rate'],
+    data: [
+      { product_id: 'P001', category: 'Electronics', stock_level: 450, reorder_point: 100, supplier: 'TechSupply Co', cost: 25.50, turnover_rate: 12.5 },
+      { product_id: 'P002', category: 'Home & Garden', stock_level: 280, reorder_point: 50, supplier: 'Garden Plus', cost: 15.75, turnover_rate: 8.2 },
+      { product_id: 'P003', category: 'Sports', stock_level: 150, reorder_point: 25, supplier: 'SportGear Inc', cost: 45.00, turnover_rate: 15.8 },
+      { product_id: 'P004', category: 'Electronics', stock_level: 85, reorder_point: 20, supplier: 'TechSupply Co', cost: 120.00, turnover_rate: 6.5 },
+      { product_id: 'P005', category: 'Health', stock_level: 320, reorder_point: 75, supplier: 'Wellness Direct', cost: 32.25, turnover_rate: 10.1 },
     ]
   }
 ];
